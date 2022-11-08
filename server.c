@@ -3,25 +3,33 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ejanssen <ejanssen@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 11:22:45 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/08 15:34:51 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/08 17:34:22 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "printf/ft_printf.h"
 #include <signal.h>
 
+static int	g_nbits = 0;
+
 void	handler(int sig)
 {
-	if (sig == SIGUSR1)
+	static int	ascii = 0;
+
+	g_nbits++;
+	if (g_nbits < 8)
 	{
-		ft_printf("1");
+		if (sig == SIGUSR1)
+			ascii += ft_pow(2, g_nbits - 1);
 	}
-	else if (sig == SIGUSR2)
+	else if (g_nbits >= 8)
 	{
-		ft_printf("0");
+		g_nbits = 0;
+		ft_printf("%d  %c\n", ascii, ascii);
+		ascii = 0;
 	}
 }
 
