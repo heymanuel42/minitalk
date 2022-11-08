@@ -6,27 +6,53 @@
 /*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 11:22:15 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/08 17:34:03 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/08 18:16:41 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "printf/ft_printf.h"
 #include <signal.h>
 
-static void	send_char(int pid, char c)
+static int	pid_ok(const char *pid_str)
+{
+	while (*pid_str)
+	{
+		if (!ft_isdigit(*pid_str))
+			return (0);
+		pid_str++;
+	}
+	return (1);
+}
+
+static int	send_char(int pid, unsigned char c)
 {
 	int	b;
+	int	status;
 
-	b = 8;
-	while (b)
+	b = 0;
+	status = 0;
+	while (b < 8)
 	{
 		if (c & 1)
-			kill(pid, SIGUSR1);
+			status = kill(pid, SIGUSR1);
 		else
-			kill(pid, SIGUSR2);
-		b--;
+			status = kill(pid, SIGUSR2);
+		b++;
 		c = c >> 1;
-		usleep(10);
+		usleep(5);
+		if (status != 0)
+			return (0);
+	}
+	return (1);
+}
+
+static int	send_str(int pid, const char *str)
+{
+	while (*str)
+	{
+		if (!(send_char(pid, (unsigned char)*str)))
+			return (0);
+		str++;
 	}
 }
 
@@ -34,8 +60,18 @@ int	main(int argc, char *argv[])
 {
 	int					pid;
 
-	(void) argc;
+	if (argc != 3)
+	{
+		ft_printf("Wrong number of arguments; expected 2 arguments\n");
+		return (1);
+	}
+	if (!pid_ok(argv[1]))
+	{
+		ft_printf("pid is not valid\n");
+		return (1);
+	}
 	pid = ft_atoi(argv[1]);
-	send_char(pid, 'C');
+	if (!send_str(pid, argv[2]))
+		ft_printf("Your message could not be delivered");
 	return (0);
 }

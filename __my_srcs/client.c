@@ -1,46 +1,51 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.c                                           :+:      :+:    :+:   */
+/*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/08 11:22:45 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/08 18:08:26 by ejanssen         ###   ########.fr       */
+/*   Created: 2022/11/08 11:22:15 by ejanssen          #+#    #+#             */
+/*   Updated: 2022/11/08 17:46:32 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "printf/ft_printf.h"
 #include <signal.h>
 
-static int	g_nbits = 0;
-
-void	handler(int sig)
+static void	send_char(int pid, char c)
 {
-	static int	ascii = 0;
+	int	b;
 
-	g_nbits++;
-	if (g_nbits < 8)
+	b = 8;
+	while (b)
 	{
-		if (sig == SIGUSR1)
-			ascii += ft_pow(2, g_nbits - 1);
-	}
-	else if (g_nbits >= 8)
-	{
-		g_nbits = 0;
-		ft_printf("%c", ascii);
-		ascii = 0;
+		if (c & 1)
+			kill(pid, SIGUSR1);
+		else
+			kill(pid, SIGUSR2);
+		b--;
+		c = c >> 1;
+		usleep(5);
 	}
 }
 
-int	main(void)
+static void	send_str(int pid, const char *str)
 {
-	ft_printf("My PID is: %d\n", getpid());
-	signal(SIGUSR1, handler);
-	signal(SIGUSR2, handler);
-	while (1)
+	while (*str)
 	{
-		pause();
+		ft_printf("%c", *str);
+		send_char(pid, *str);
+		str++;
 	}
+}
+
+int	main(int argc, char *argv[])
+{
+	int					pid;
+
+	(void) argc;
+	pid = ft_atoi(argv[1]);
+	send_str(pid, argv[2]);
 	return (0);
 }

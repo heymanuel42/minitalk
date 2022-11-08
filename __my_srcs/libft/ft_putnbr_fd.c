@@ -1,46 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.c                                           :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/08 11:22:45 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/08 18:08:26 by ejanssen         ###   ########.fr       */
+/*   Created: 2022/10/26 13:32:48 by ejanssen          #+#    #+#             */
+/*   Updated: 2022/10/28 17:33:07 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf/ft_printf.h"
-#include <signal.h>
+#include "libft.h"
 
-static int	g_nbits = 0;
-
-void	handler(int sig)
+static void	ft_putnbr_rec(long nb, int fd)
 {
-	static int	ascii = 0;
+	char	c;
 
-	g_nbits++;
-	if (g_nbits < 8)
+	if (nb >= 10)
 	{
-		if (sig == SIGUSR1)
-			ascii += ft_pow(2, g_nbits - 1);
+		ft_putnbr_rec(nb / 10, fd);
+		ft_putnbr_rec(nb % 10, fd);
 	}
-	else if (g_nbits >= 8)
+	else
 	{
-		g_nbits = 0;
-		ft_printf("%c", ascii);
-		ascii = 0;
+		c = '0' + nb;
+		ft_putchar_fd(c, fd);
 	}
 }
 
-int	main(void)
+void	ft_putnbr_fd(int n, int fd)
 {
-	ft_printf("My PID is: %d\n", getpid());
-	signal(SIGUSR1, handler);
-	signal(SIGUSR2, handler);
-	while (1)
+	long	ln;
+
+	ln = n;
+	if (n < 0)
 	{
-		pause();
+		ft_putchar_fd('-', fd);
+		ft_putnbr_rec(ln * -1, fd);
 	}
-	return (0);
+	else
+		ft_putnbr_rec(n, fd);
 }
