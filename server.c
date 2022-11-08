@@ -6,7 +6,7 @@
 /*   By: ejanssen <ejanssen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 11:22:45 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/08 14:31:46 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/08 15:34:51 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	handler(int sig)
 	{
 		ft_printf("1");
 	}
-	else
+	else if (sig == SIGUSR2)
 	{
 		ft_printf("0");
 	}
@@ -34,7 +34,6 @@ int	main(void)
 	action.sa_handler = handler;
 	sigaction(SIGUSR1, &action, NULL);
 	sigaction(SIGUSR2, &action, NULL);
-
 	while (1)
 	{
 		pause();
