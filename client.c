@@ -3,63 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
+/*   By: ejanssen <ejanssen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 11:22:15 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/08 18:16:41 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/09 13:29:28 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf/ft_printf.h"
-#include <signal.h>
+#include "common.h"
 
-static int	pid_ok(const char *pid_str)
+void	handler(int sig)
 {
-	while (*pid_str)
-	{
-		if (!ft_isdigit(*pid_str))
-			return (0);
-		pid_str++;
-	}
-	return (1);
-}
-
-static int	send_char(int pid, unsigned char c)
-{
-	int	b;
-	int	status;
-
-	b = 0;
-	status = 0;
-	while (b < 8)
-	{
-		if (c & 1)
-			status = kill(pid, SIGUSR1);
-		else
-			status = kill(pid, SIGUSR2);
-		b++;
-		c = c >> 1;
-		usleep(5);
-		if (status != 0)
-			return (0);
-	}
-	return (1);
-}
-
-static int	send_str(int pid, const char *str)
-{
-	while (*str)
-	{
-		if (!(send_char(pid, (unsigned char)*str)))
-			return (0);
-		str++;
-	}
+	(void)sig;
 }
 
 int	main(int argc, char *argv[])
 {
 	int					pid;
+	struct sigaction	action;
 
+	action.sa_flags = 0;
+	action.sa_handler = handler;
+	sigaction(SIGUSR1, &action, NULL);
 	if (argc != 3)
 	{
 		ft_printf("Wrong number of arguments; expected 2 arguments\n");

@@ -3,32 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
+/*   By: ejanssen <ejanssen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 11:22:45 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/08 18:08:26 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/09 13:32:22 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf/ft_printf.h"
-#include <signal.h>
+#include "common.h"
 
-static int	g_nbits = 0;
+struct sigaction	g_action;
 
-void	handler(int sig)
+void	test(int sig, siginfo_t *info, void *d)
 {
-	static int	ascii = 0;
+	static char	ascii = 0;
+	static int	nbits = 0;
 
-	g_nbits++;
-	if (g_nbits < 8)
+	(void)d;
+	nbits++;
+	if (sig == SIGUSR1)
+		ascii += ft_pow(2, nbits - 1);
+	kill(info->si_pid, SIGUSR2);
+	if (nbits == 8)
 	{
-		if (sig == SIGUSR1)
-			ascii += ft_pow(2, g_nbits - 1);
-	}
-	else if (g_nbits >= 8)
-	{
-		g_nbits = 0;
-		ft_printf("%c", ascii);
+		ft_putchar_fd(ascii, 1);
+		nbits = 0;
 		ascii = 0;
 	}
 }
@@ -36,8 +35,10 @@ void	handler(int sig)
 int	main(void)
 {
 	ft_printf("My PID is: %d\n", getpid());
-	signal(SIGUSR1, handler);
-	signal(SIGUSR2, handler);
+	g_action.sa_flags = 0;
+	g_action.sa_sigaction = test;
+	sigaction(SIGUSR1, &g_action, NULL);
+	sigaction(SIGUSR2, &g_action, NULL);
 	while (1)
 	{
 		pause();
