@@ -6,28 +6,31 @@
 /*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 11:22:45 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/09 22:14:59 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/10 19:36:20 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "common.h"
 
-void	handler(int sig, siginfo_t *info, void *d)
+static void	handler(int sig, siginfo_t *info, void *d)
 {
-	static char	ascii = 0;
-	static int	nbits = 0;
+	static unsigned int	ascii;
+	static int			nbits;
 
 	(void)d;
-	nbits++;
 	if (sig == B_1)
-		ascii += ft_pow(2, nbits - 1);
-	if (nbits == 8)
+		ascii |= 1 << nbits;
+	if (kill(info->si_pid, B_1) < 0)
+		ft_printf("lost bit errno: %d\n", errno);
+	nbits++;
+	if (nbits == N_BITS)
 	{
 		ft_putchar_fd(ascii, 1);
 		if (ascii == 0)
 		{
+			if (kill(info->si_pid, B_0) < 0)
+				ft_printf("lost bit errno: %d\n", errno);
 			ft_printf("\n");
-			send_bit(info->si_pid, B_1);
 		}
 		nbits = 0;
 		ascii = 0;
@@ -39,11 +42,20 @@ int	main(void)
 	struct sigaction	action;
 
 	ft_printf("My PID is: %d\n", getpid());
-	sigemptyset(&action.sa_mask);
+	if (sigemptyset(&action.sa_mask) < 0
+		|| sigaddset(&action.sa_mask, B_0) < 0
+		|| sigaddset(&action.sa_mask, B_1) < 0)
+	{
+		ft_printf("trouble setting up signal errno: %d\n", errno);
+		return (-1);
+	}
 	action.sa_flags = SA_SIGINFO;
 	action.sa_sigaction = handler;
-	sigaction(B_1, &action, NULL);
-	sigaction(B_0, &action, NULL);
+	if (sigaction(B_1, &action, NULL) < 0 || sigaction(B_0, &action, NULL) < 0)
+	{
+		ft_printf("signal not established errno: %d\n", errno);
+		return (-1);
+	}
 	while (1)
 		pause();
 	return (0);
