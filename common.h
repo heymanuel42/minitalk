@@ -6,7 +6,7 @@
 /*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 12:27:32 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/10 19:27:04 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/11 10:08:17 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 
 # define B_0 SIGUSR2
 # define B_1 SIGUSR1
-# define N_BITS 16
 
 int	send_bit(int pid, int i);
 int	send_char(int pid, char c);

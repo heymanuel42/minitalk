@@ -1,18 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.c                                           :+:      :+:    :+:   */
+/*   server_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 11:22:45 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/11 10:26:17 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/11 10:46:49 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "common.h"
 
-static void	handler(int sig, siginfo_t *info, void *ctx);
+static void	handler(int sig, siginfo_t *info, void *d);
+
+char	*g_message = NULL;
 
 int	main(void)
 {
@@ -26,7 +28,7 @@ int	main(void)
 		ft_printf("trouble setting up signal mask errno: %d\n", errno);
 		return (-1);
 	}
-	action.sa_flags = SA_SIGINFO;
+	action.sa_flags = SA_SIGINFO | SA_NODEFER;
 	action.sa_sigaction = handler;
 	if (sigaction(B_1, &action, NULL) < 0 || sigaction(B_0, &action, NULL) < 0)
 	{
@@ -38,22 +40,29 @@ int	main(void)
 	return (0);
 }
 
-static void	handler(int sig, siginfo_t *info, void *ctx)
+static void	handler(int sig, siginfo_t *info, void *d)
 {
-	static char	ascii;
-	static int	nbits = 1;
+	static unsigned int	fchar;
+	static int			nbits = 1;
 
-	(void)ctx;
-	(void)info;
+	(void)d;
 	if (sig == B_1)
-		ascii |= nbits;
+		fchar |= nbits;
 	nbits <<= 1;
+	if (kill(info->si_pid, B_1) < 0)
+		ft_printf("lost bit errno: %d\n", errno);
 	if (nbits == 128)
 	{
-		ft_printf("%c", ascii);
-		if (ascii == 0)
-			ft_printf("\n");
+		g_message = ft_append(g_message, fchar);
+		if (fchar == 0)
+		{
+			if (kill(info->si_pid, B_0) < 0)
+				ft_printf("lost bit errno: %d\n", errno);
+			ft_printf("%s\n", g_message);
+			free(g_message);
+			g_message = NULL;
+		}
 		nbits = 1;
-		ascii = 0;
+		fchar = 0;
 	}
 }

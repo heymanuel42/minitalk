@@ -3,6 +3,7 @@
 		"signal.h": "c",
 		"ft_printf.h": "c",
 		"errno.h": "c",
-		"common.h": "c"
+		"common.h": "c",
+		"libft.h": "c"
 	}
 }
