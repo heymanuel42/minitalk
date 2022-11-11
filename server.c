@@ -3,16 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
+/*   By: ejanssen <ejanssen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 11:22:45 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/11 10:26:17 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/11 14:06:24 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "common.h"
 
 static void	handler(int sig, siginfo_t *info, void *ctx);
+
+char	*g_message = NULL;
 
 int	main(void)
 {
@@ -23,14 +25,14 @@ int	main(void)
 		|| sigaddset(&action.sa_mask, B_0) < 0
 		|| sigaddset(&action.sa_mask, B_1) < 0)
 	{
-		ft_printf("trouble setting up signal mask errno: %d\n", errno);
+		ft_printf("trouble setting up signal mask\n");
 		return (-1);
 	}
 	action.sa_flags = SA_SIGINFO;
 	action.sa_sigaction = handler;
 	if (sigaction(B_1, &action, NULL) < 0 || sigaction(B_0, &action, NULL) < 0)
 	{
-		ft_printf("signal not established errno: %d\n", errno);
+		ft_printf("signal not established\n");
 		return (-1);
 	}
 	while (1)
@@ -45,15 +47,23 @@ static void	handler(int sig, siginfo_t *info, void *ctx)
 
 	(void)ctx;
 	(void)info;
-	if (sig == B_1)
-		ascii |= nbits;
-	nbits <<= 1;
-	if (nbits == 128)
+	if (info->si_pid > 0)
 	{
-		ft_printf("%c", ascii);
-		if (ascii == 0)
-			ft_printf("\n");
-		nbits = 1;
-		ascii = 0;
+		if (sig == B_1)
+			ascii |= nbits;
+		nbits <<= 1;
+		if (nbits == 128)
+		{
+			g_message = ft_append(g_message, ascii);
+			if (ascii == 0)
+			{
+				ft_printf("%s\n", g_message);
+				if (g_message)
+					free(g_message);
+				g_message = NULL;
+			}
+			nbits = 1;
+			ascii = 0;
+		}
 	}
 }

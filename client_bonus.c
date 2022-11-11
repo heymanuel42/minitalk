@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
+/*   By: ejanssen <ejanssen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 11:22:15 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/11 10:29:34 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/11 13:49:38 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,22 +26,16 @@ int	main(int argc, char *argv[])
 	if (set_actions() < 0)
 		return (1);
 	if (send_str(pid, argv[2]) < 0)
-		ft_printf("Could not deliver message: %d\n", errno);
+		ft_printf("Could not deliver message\n");
 	return (0);
 }
 
 static void	handler(int sig, siginfo_t *info, void *d)
 {
-	static int	nbits;
-
 	(void)sig;
 	(void)d;
-	nbits++;
 	if (sig == B_0)
-	{
-		ft_printf("%d bits sent to %d\n", nbits - 1, info->si_pid);
-		nbits = 0;
-	}
+		ft_printf("message sent successfully to process: %d\n", info->si_pid);
 }
 
 static int	test_params(int argc, char*argv[])
@@ -67,14 +61,14 @@ static int	set_actions(void)
 		|| sigaddset(&action.sa_mask, B_0) < 0
 		|| sigaddset(&action.sa_mask, B_1) < 0)
 	{
-		ft_printf("trouble setting up signal errno: %d\n", errno);
+		ft_printf("trouble setting up signal\n");
 		return (-1);
 	}
 	action.sa_flags = SA_SIGINFO;
 	action.sa_sigaction = handler;
 	if (sigaction(B_0, &action, NULL) < 0 || sigaction(B_1, &action, NULL) < 0)
 	{
-		ft_printf("signal not established errno: %d\n", errno);
+		ft_printf("signal not established\n");
 		return (-1);
 	}
 	return (0);

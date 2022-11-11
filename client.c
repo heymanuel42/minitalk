@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
+/*   By: ejanssen <ejanssen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 11:22:15 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/11 10:28:13 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/11 12:41:50 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,13 @@ static int	test_params(int argc, char*argv[]);
 
 int	main(int argc, char *argv[])
 {
-	int					pid;
+	int	pid;
 
 	if (test_params(argc, argv) < 0)
 		return (1);
 	pid = ft_atoi(argv[1]);
 	if (send_str(pid, argv[2]) < 0)
-		ft_printf("Could not deliver message: %d\n", errno);
+		ft_printf("Could not deliver message\n");
 	return (0);
 }
 

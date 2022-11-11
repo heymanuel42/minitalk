@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   common_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
+/*   By: ejanssen <ejanssen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 12:29:17 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/11 10:55:05 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/11 13:47:59 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "common.h"
+#include "common_bonus.h"
 #include "printf/ft_printf.h"
 #include <signal.h>
 
@@ -33,12 +33,12 @@ int	send_bit(int pid, int i)
 		return (kill(pid, B_0));
 }
 
-int	send_char(int pid, unsigned char c)
+int	send_char(int pid, unsigned short c)
 {
 	int	b;
 
 	b = 1;
-	while (b < 128)
+	while (b < 0b1000000000000000)
 	{
 		if (send_bit(pid, c & 1) < 0)
 			return (-1);
@@ -53,7 +53,7 @@ int	send_str(int pid, const char *str)
 {
 	while (*str)
 	{
-		if (send_char(pid, (unsigned char)*str) < 0)
+		if (send_char(pid, (unsigned int)*str) < 0)
 			return (-1);
 		str++;
 	}

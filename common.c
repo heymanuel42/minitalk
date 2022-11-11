@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   common.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
+/*   By: ejanssen <ejanssen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 12:29:17 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/11 10:56:20 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/11 13:56:11 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	send_bit(int pid, int i)
 		return (kill(pid, B_0));
 }
 
-int	send_char(int pid, unsigned char c)
+int	send_char(int pid, char c)
 {
 	int	b;
 
@@ -44,7 +44,7 @@ int	send_char(int pid, unsigned char c)
 			return (-1);
 		b <<= 1;
 		c >>= 1;
-		usleep(10);
+		usleep(100);
 	}
 	return (0);
 }
@@ -53,7 +53,7 @@ int	send_str(int pid, const char *str)
 {
 	while (*str)
 	{
-		if (send_char(pid, (unsigned char)*str) < 0)
+		if (send_char(pid, (unsigned int)*str) < 0)
 			return (-1);
 		str++;
 	}

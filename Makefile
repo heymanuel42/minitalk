@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+         #
+#    By: ejanssen <ejanssen@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/09 12:04:42 by ejanssen          #+#    #+#              #
-#    Updated: 2022/11/11 09:03:39 by ejanssen         ###   ########.fr        #
+#    Updated: 2022/11/11 12:09:43 by ejanssen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,8 @@ SRCS	+= printf/ft_printf_ptr.c
 SRCS	+= printf/ft_printf_str.c
 SRCS	+= printf/ft_printf.c
 SRCS	+= printf/ft_printf_padstr.c
+
+SRC_NAMES = client server common
 
 CLI = client.c
 SRV = server.c
