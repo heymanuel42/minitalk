@@ -6,7 +6,7 @@
 /*   By: ejanssen <ejanssen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 12:29:17 by ejanssen          #+#    #+#             */
-/*   Updated: 2022/11/11 09:26:32 by ejanssen         ###   ########.fr       */
+/*   Updated: 2022/11/11 10:56:20 by ejanssen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	send_bit(int pid, int i)
 		return (kill(pid, B_0));
 }
 
-int	send_char(int pid, char c)
+int	send_char(int pid, unsigned char c)
 {
 	int	b;
 
@@ -53,7 +53,7 @@ int	send_str(int pid, const char *str)
 {
 	while (*str)
 	{
-		if (send_char(pid, *str) < 0)
+		if (send_char(pid, (unsigned char)*str) < 0)
 			return (-1);
 		str++;
 	}
